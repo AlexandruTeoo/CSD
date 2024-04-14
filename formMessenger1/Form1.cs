@@ -25,7 +25,7 @@ namespace formMessenger1
 
             try
             {
-                Thread th = new Thread(Refresh);
+                Thread th = new Thread(refresh);
                 th.Start();
             }
             catch (Exception e)
@@ -35,19 +35,19 @@ namespace formMessenger1
         }
 
 
-
         private void sendBtn_Click(object sender, EventArgs e)
         {
             while (Communication.isRunning)
             {
                 Console.Write("You: ");
-                string message = Console.ReadLine();
+                string message = messegeToSendTxt.Text;
+                messegeToSendTxt.Clear();
 
-                if (message.ToLower() == "exit")
-                    break;
-
-                Communication.SendMessage(message, peers[peerUserTxt.Text + peerIPTxt.Text].IP);
-                me.addMessege(message);
+                if (message != null)
+                {
+                    Communication.SendMessage(message, peers[peerUserTxt.Text + peerIPTxt.Text].IP);
+                    me.addMessege(message);
+                } 
             }
 
             Communication.isRunning = false;
@@ -63,21 +63,22 @@ namespace formMessenger1
             peers[peerUserTxt.Text + peerIPTxt.Text] = new User { Username = peerUserTxt.Text, IP = peerIPTxt.Text };
 
             Communication.StartListening();
+
+            MessageBox.Show("ok");
         }
 
         private void refresh()
         {
             string receiveMessege = null;
-
+            string key = peerUserTxt.Text + peerIPTxt.Text;
             while (true)
             {
-
                 receiveMessege = Communication.StartListening();
 
-                if (peers.ContainsKey(peerUserTxt.Text + peerIPTxt.Text) && receiveMessege != "")
+                if (peers.ContainsKey(key) && receiveMessege != "")
                 {
-                    peers[peerUserTxt.Text + peerIPTxt.Text].addMessege(receiveMessege);
-                    for (int i = 0; i < peers[peerUserTxt.Text + peerIPTxt.Text].Messeges.Count(); ++i)
+                    peers[key].addMessege(receiveMessege);
+                    for (int i = 0; i < peers[key].Messeges.Count(); ++i)
                     {
                         RefreshMessages(receiveMessege);
                     }

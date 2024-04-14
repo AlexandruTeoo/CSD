@@ -44,7 +44,6 @@ namespace formMessenger1
                 while (isRunning)
                 {
                     TcpClient client = listener.AcceptTcpClient();
-                    Console.WriteLine("Connected to peer: " + ((IPEndPoint)client.Client.RemoteEndPoint).Address);
 
                     //Thread receiveThread = new Thread(() => HandleClient(client));
                     Thread receiveThread = new Thread(() => ReceivedMessage = HandleClient(client));
@@ -71,7 +70,6 @@ namespace formMessenger1
 
                 byte[] data = Encoding.UTF8.GetBytes(message);
                 stream.Write(data, 0, data.Length);
-                Console.WriteLine("Sent: " + message);
 
                 stream.Close();
                 client.Close();
@@ -95,7 +93,6 @@ namespace formMessenger1
                     if (bytesRead > 0)
                     {
                         string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        Console.WriteLine("Received from peer: " + receivedMessage);
                         return receivedMessage;
                     }
                 }
