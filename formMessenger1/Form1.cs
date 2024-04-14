@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Mail;
 
 namespace formMessenger1
 {
@@ -64,21 +65,37 @@ namespace formMessenger1
             Communication.StartListening();
         }
 
-        private void Refresh()
+        private void refresh()
         {
             string receiveMessege = null;
 
             while (true)
             {
+
                 receiveMessege = Communication.StartListening();
-                if (peers.ContainsKey(peerUserTxt.Text + peerIPTxt.Text))
+
+                if (peers.ContainsKey(peerUserTxt.Text + peerIPTxt.Text) && receiveMessege != "")
                 {
                     peers[peerUserTxt.Text + peerIPTxt.Text].addMessege(receiveMessege);
                     for (int i = 0; i < peers[peerUserTxt.Text + peerIPTxt.Text].Messeges.Count(); ++i)
                     {
-                        messegeWindowTxt.Text += receiveMessege;
+                        RefreshMessages(receiveMessege);
                     }
                 }
+            }
+        }
+
+        private void RefreshMessages(string message)
+        {
+            if (messegeWindowTxt.InvokeRequired)
+            {
+                // Dacă suntem pe un fir de execuție diferit de cel UI, folosim Invoke pentru a accesa controlul UI
+                this.Invoke(new MethodInvoker(delegate { RefreshMessages(message); }));
+            }
+            else
+            {
+                // Adăugăm mesajul în fereastra text
+                messegeWindowTxt.Text += message + Environment.NewLine;
             }
         }
     }
